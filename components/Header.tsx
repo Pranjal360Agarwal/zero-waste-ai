@@ -1,11 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 'use client'
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import {  } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { Button } from "@/components/ui/button"
-import { Menu, Coins, Leaf, Search, Bell, User, ChevronDown, LogIn } from "lucide-react"
+import { Menu, Coins, Leaf, Search, Bell, User, ChevronDown, LogIn, LogOut } from "lucide-react"
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -14,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Web3Auth } from "@web3auth/modal"
-import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base"
+import { CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK } from "@web3auth/base"
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
 import { createUser, getUnreadNotifications, markNotificationAsRead, getUserByEmail, getUserBalance } from "@/utils/db/actions"
@@ -47,12 +46,12 @@ interface HeaderProps {
   totalEarnings: number;
 }
 
-export default function Header({ onMenuClick }: HeaderProps) {
- 
+export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
+  const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [userInfo, setUserInfo] = useState<>(null);
-
+  const [userInfo, setUserInfo] = useState<any>(null);
+  const pathname = usePathname()
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const isMobile = useMediaQuery("(max-width: 768px)")
   const [balance, setBalance] = useState(0)
